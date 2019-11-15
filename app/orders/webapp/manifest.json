@@ -14,7 +14,7 @@
 		},
 		"dataSources": {
 			"mainService": {
-				"uri": "/srv_api/odata/v2/CatalogService/",
+				"uri": "../../odata/v2/CatalogService/",
 				"type": "OData",
 				"settings": {
 					"localUri": "localService/metadata.xml"
