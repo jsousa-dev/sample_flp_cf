@@ -6,16 +6,10 @@
   },
   "routes": [
     {
-      "source": "/srv_api/(.*)$",
+      "source": "^(.*)$",
       "target": "$1",
-      "authenticationType": "none",
-      "destination": "srv_api",
-      "csrfProtection": false
-    },
-    {
-      "source": "^/books/(.*)$",
-      "target": "$1",
-      "localDir": "webapp"
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
     }
   ]
 }

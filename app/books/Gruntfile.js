@@ -5,6 +5,9 @@ module.exports = function (grunt) {
 		compatVersion: "edge"
 	});
 	grunt.registerTask("default", [
-		"lint"
+		"clean",
+		"lint",
+		"build"
 	]);
+	grunt.config.set("deploy_mode", "html_repo");
 };
