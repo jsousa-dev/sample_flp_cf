@@ -1,7 +1,37 @@
 ID: sample1
 _schema-version: "2.1"
+parameters:
+  deploy_mode: html5-repo
 version: 0.0.1
 modules:
+  - name: sample1-approuter
+    type: approuter.nodejs
+    path: approuter
+    properties:
+      destinations:
+        - name: dest_odata_srv
+          url: "~{srv_api/url}"
+          forwardAuthToken: true
+    requires:
+      - name: approuter_sample1
+      - name: uaa_sample1
+      - name: portal_resources_sample1
+      - name: srv_api
+  - name: sample1-uideployer
+    type: com.sap.html5.application-content
+    path: uideployer
+    requires:
+      - name: ui_deployer_sample1
+    build-parameters:
+      requires:
+        - name: books
+          artifacts:
+            - "./*"
+          target-path: resources/books
+        - name: orders
+          artifacts:
+            - "./*"
+          target-path: resources/orders
   - name: sample1-db
     type: hdb
     path: db
@@ -24,8 +54,76 @@ modules:
         properties:
           JBP_CONFIG_RESOURCE_CONFIGURATION: '[tomcat/webapps/ROOT/META-INF/context.xml:
             {"service_name_for_DefaultDB" : "~{hdi-container-name}"}]'
+  - name: books
+    type: html5
+    path: app/books
+    parameters:
+       disk-quota: 256M
+       memory: 256M
+    build-parameters:
+       builder: grunt
+    requires:
+     - name: srv_api
+       group: destinations
+       properties:
+          forwardAuthToken: true
+          strictSSL: false
+          name: srv_api
+          url: ~{url}
+     - name: uaa_sample1
+  - name: orders
+    type: html5
+    path: app/orders
+    parameters:
+       disk-quota: 256M
+       memory: 256M
+    build-parameters:
+       builder: grunt
+    requires:
+     - name: srv_api
+       group: destinations
+       properties:
+          forwardAuthToken: true
+          strictSSL: false
+          name: srv_api
+          url: ~{url}
+     - name: uaa_sample1
+  - name: flp
+    type: com.sap.portal.content
+    path: flp
+    parameters:
+       stack: cflinuxfs3
+       memory: 128M
+       buildpack: https://github.com/cloudfoundry/nodejs-buildpack/releases/download/v1.6.39/nodejs-buildpack-cflinuxfs3-v1.6.39.zip
+    requires:
+     - name: portal_resources_sample1
+     - name: uaa_sample1
+     - name: approuter_sample1
+     - name: ui_deployer_sample1
 resources:
+  - name: approuter_sample1
+    parameters:
+      service-plan: app-runtime
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: ui_deployer_sample1
+    parameters:
+      service-plan: app-host
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
   - name: sample1-db-hdi-container
     type: com.sap.xs.hdi-container
     properties:
       hdi-container-name: ${service-name}
+  - name: uaa_sample1
+    parameters:
+       path: ./xs-security.json
+       service-plan: application
+       service: xsuaa
+    type: org.cloudfoundry.managed-service
+  - name: portal_resources_sample1
+    parameters:
+       service-plan: standard
+       service: portal
+    type: org.cloudfoundry.managed-service
+
