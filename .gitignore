@@ -31,3 +31,9 @@ mergedManifestDescriptor.json
 APIExternalProducer.js
 .*/APIExternalProducer.js
 /mta_archives/
+/.mta
+dist/
+uideployer/resources/
+orders/webapp/localService/metadata.xml
+books/webapp/localService/metadata.xml
+*.mtar
